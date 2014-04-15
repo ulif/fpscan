@@ -1,0 +1,16 @@
+Building
+========
+
+::
+
+  $ autoreconf -fvi
+  $ ./configure
+  $ make
+
+Installing
+==========
+
+::
+
+  $ sudo make install
+
