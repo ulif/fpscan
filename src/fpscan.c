@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <getopt.h>
 #include <libfprint/fprint.h>
 
 struct fp_dscv_dev *discover_device(struct fp_dscv_dev **discovered_devs)
@@ -46,9 +46,59 @@ struct fp_dscv_dev *discover_device(struct fp_dscv_dev **discovered_devs)
 	return ddev;
 }
 
-
-int main(void)
+void print_help(void)
 {
+  fprintf(stderr, "Usage: fpscan [OPTION]...\n");
+  fprintf(stderr, "Interact with fingerprint scanner devices.\n");
+  fprintf(stderr, "If no option was given, list available devices.\n");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "  -v, --verbose   be verbose\n");
+  fprintf(stderr, "  -h, --help      display this help and quit\n");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "Mandatory arguments to long options are mandatory for short options too.\n");
+  fprintf(stderr, "\n");
+  fprintf(stderr, "Report fpscan bugs to uli at gnufix dot de.\n");
+}
+
+int main(int argc, char **argv)
+{
+  int verbose_flag = 0;
+  int c;
+
+  while (1)
+    {
+      static struct option long_options[] = {
+	{"help", no_argument, 0, 'h'},
+	{"verbose", no_argument, 0, 'v'},
+	{NULL, 0, NULL, 0}
+      };
+      int option_index = 0;
+      c = getopt_long(argc, argv, "hv", long_options, &option_index);
+      if (c == -1) {
+	break;
+      }
+      switch(c)
+	{
+	case 0:
+	  /* no further options to scan/handle */
+	  break;
+	case 'v':
+	  printf( "Be verbose\n" );
+	  verbose_flag = 1;
+	  break;
+	case 'h':
+	  print_help();
+	  exit(0);
+	case '?':
+	  /* error happened; error message already printed. */
+	  break;
+	default:
+	  abort ();
+	}
+    }
+  exit(0);
+
+
 	int r = 1;
         int d = 0;
 	int dev_num = 0;
