@@ -94,26 +94,88 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 }
 
 
-struct fp_dscv_dev *discover_device(struct fp_dscv_dev **discovered_devs)
+void
+discover_device(struct fp_dscv_dev *ddev, int verbose_flag)
 {
-	struct fp_dscv_dev *ddev = discovered_devs[0];
-	struct fp_driver *drv;
-	if (!ddev)
-		return NULL;
-	drv = fp_dscv_dev_get_driver(ddev);
-	printf("Found device claimed by %s driver\n", fp_driver_get_full_name(drv));
-	printf("Driver name: %s\n", fp_driver_get_name(drv));
-	printf("Driver ID:   %d\n", fp_driver_get_driver_id(drv));
-	printf("Scan type:   %d\n", fp_driver_get_scan_type(drv));
+  struct fp_driver *drv = NULL;
+  struct fp_dev *dev = NULL;
 
-	struct fp_dev *dev = fp_dev_open(ddev);
-	printf("Num Enroll Stages:  %d\n", fp_dev_get_nr_enroll_stages(dev));
-	printf("Devtype:            %d\n", fp_dev_get_devtype(dev));
-	printf("Supports Imaging:   %d\n", fp_dev_supports_imaging(dev));
-	printf("Image WidthxHeight: %d x %d\n",
-	       fp_dev_get_img_width(dev), fp_dev_get_img_height(dev));
-	fp_dev_close(dev);
-	return ddev;
+  if (!ddev)
+    {
+      return;
+    }
+  drv = fp_dscv_dev_get_driver (ddev);
+  dev = fp_dev_open (ddev);
+  if (!dev)
+    {
+      fprintf(stderr, "Could not open device.\n");
+      exit (EXIT_FAILURE);
+    }
+  if (verbose_flag)
+    {
+      printf ("Found %s\n", fp_driver_get_full_name (drv));
+      printf ("  Driver name: %s\n", fp_driver_get_name (drv));
+      printf ("  Driver ID:   %d\n", fp_driver_get_driver_id (drv));
+      printf ("  Scan type:   %d\n", fp_driver_get_scan_type (drv));
+      printf ("  Num Enroll Stages:  %d\n", fp_dev_get_nr_enroll_stages (dev));
+      printf ("  Devtype:            %d\n", fp_dev_get_devtype (dev));
+      printf ("  Supports Imaging:   %d\n", fp_dev_supports_imaging (dev));
+      printf ("  Image WidthxHeight: %d x %d\n",
+	     fp_dev_get_img_width (dev), fp_dev_get_img_height (dev));
+    }
+  else
+    {
+      printf ("\
+%s\n\
+  %d %d %d %d %d %d %d\n\
+",	      fp_driver_get_full_name (drv),
+	      fp_driver_get_driver_id (drv),
+	      fp_driver_get_scan_type (drv),
+	      fp_dev_get_nr_enroll_stages (dev),
+	      fp_dev_get_devtype (dev),
+	      fp_dev_supports_imaging (dev),
+	      fp_dev_get_img_width (dev),
+	      fp_dev_get_img_height (dev)
+	      );
+    }
+  fp_dev_close (dev);
+}
+
+
+void
+detect_devices(int verbose_flag)
+{
+  int dev_num = 0;
+  struct fp_dscv_dev **discovered_devs;
+  struct fp_dscv_dev **curr_dev;
+
+  discovered_devs = fp_discover_devs ();
+
+  if (!discovered_devs)
+    {
+      fprintf (stderr, "Could not discover devices\n");
+      exit (EXIT_FAILURE);
+    }
+
+  if (*discovered_devs == NULL) {
+    if (verbose_flag)
+      {
+	fprintf(stdout, "No fingerprint scanners detected.\n");
+      }
+    else
+      {
+	fprintf(stdout, "0\n");
+      }
+    return;
+  }
+
+  for (curr_dev = discovered_devs; *curr_dev != NULL; curr_dev++)
+    {
+      dev_num++;
+      discover_device(*curr_dev, verbose_flag);
+    }
+
+  fp_dscv_devs_free(discovered_devs);
 }
 
 
@@ -122,6 +184,8 @@ main(int argc, char **argv)
 {
   int verbose_flag = 0;
   int c;
+  int resource = 1;
+
   program_name = argv[0];
 
   while ((c = getopt_long (argc, argv, "hv", long_options, NULL))
@@ -130,75 +194,27 @@ main(int argc, char **argv)
       switch(c)
 	{
 	case 'v':
-	  printf( "Be verbose\n" );
 	  verbose_flag = 1;
 	  break;
 	case GETOPT_HELP_CHAR:
 	  usage (EXIT_SUCCESS);
-	  break;
+	  exit (EXIT_SUCCESS);
 	case GETOPT_VERSION_CHAR:
 	  version (stdout );
 	  exit (EXIT_SUCCESS);
 	default:
 	  usage (EXIT_FAILURE);
-	  break;
+	  exit (EXIT_FAILURE);
 	}
     }
-  exit(0);
+  resource = fp_init();
+  if (resource < 0) {
+    fprintf (stderr, "Failed to initialize libfprint\n");
+    exit (EXIT_FAILURE);
+  }
 
+  detect_devices (verbose_flag);
 
-	int r = 1;
-        int d = 0;
-	int dev_num = 0;
-	struct fp_dscv_dev *ddev;
-	struct fp_dscv_dev **discovered_devs;
-	struct fp_dscv_dev **ddevs;
-	struct fp_dev *dev;
-	struct fp_print_data *data;
-
-	printf("fpscan 0.1dev\n"
-	       "Fingerprint scanning for Linux based on libfprint.\n"
-	       "This software is covered by LGPL 2.1.\n"
-	       );
-	//getchar();
-
-	r = fp_init();
-	if (r < 0) {
-		fprintf(stderr, "Failed to initialize libfprint\n");
-		exit(1);
-	}
-	fp_set_debug(3);
-
-	discovered_devs = fp_discover_devs();
-	if (!discovered_devs) {
-		fprintf(stderr, "Could not discover devices\n");
-		goto out;
-	}
-
-	ddevs = discovered_devs;
-	for (ddevs = discovered_devs; *ddevs != NULL; ddevs++) {
-	  dev_num++;
-	  printf("Hi there! %p %p\n", ddevs, *ddevs);
-	  discover_device(ddevs);
-	}
-	printf("Num: %ld\n", ddevs-discovered_devs);
-	printf("Num2: %d\n", dev_num);
-
-	ddev = discover_device(discovered_devs);
-	if (!ddev) {
-		fprintf(stderr, "No devices detected.\n");
-		goto out;
-	}
-	dev = fp_dev_open(ddev);
-	fp_dscv_devs_free(discovered_devs);
-	if (!dev) {
-		fprintf(stderr, "Could not open device.\n");
-		goto out;
-	}
-
-out_close:
-	fp_dev_close(dev);
-out:
-	fp_exit();
-	return r;
+  fp_exit();
+  exit (EXIT_SUCCESS);
 }
