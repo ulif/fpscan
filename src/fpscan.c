@@ -24,6 +24,76 @@
 #include <getopt.h>
 #include <libfprint/fprint.h>
 
+/* The official name of this program.  */
+#define PROGRAM_NAME "fpscan"
+#define VERSION "0.1dev"
+
+char *program_name = NULL;
+
+/* These enum values cannot possibly conflict with the option values
+   ordinarily used by commands, including CHAR_MAX + 1, etc.  Avoid
+   CHAR_MIN - 1, as it may equal -1, the getopt end-of-options value.  */
+enum
+{
+  GETOPT_HELP_CHAR = (0 - 2),
+  GETOPT_VERSION_CHAR = (0 - 3)
+};
+
+/* Options this program supports.  */
+static struct option const long_options[] = {
+  {"verbose", no_argument, NULL, 'v'},
+  {"help", no_argument, NULL, GETOPT_HELP_CHAR},
+  {"version", no_argument, NULL, GETOPT_VERSION_CHAR},
+  {NULL, 0, NULL, 0}
+};
+
+
+void
+version(FILE *stream)
+{
+  fprintf (stream, "%s %s\n", PROGRAM_NAME, VERSION);
+  fprintf (stream, "Copyright (C) 2014 Uli Fouquet and WAeUP Germany\n");
+  fputs ("\
+\n\
+License GPLv3+: GNU GPL version 3 or later \
+<http://gnu.org/licenses/gpl.html>.\n\
+This is free software: you are free to change and redistribute it.\n\
+There is NO WARRANTY, to the extent permitted by law.\n\
+\n\
+",
+	 stream);
+  fprintf (stream, "Written by Uli Fouquet.\n");
+}
+
+
+void
+usage(int status)
+{
+  if (status != EXIT_SUCCESS)
+    fprintf (stderr, "Try `%s --help' for more information.\n", program_name);
+  else
+    {
+      printf ("\
+Usage: %s [OPTION]...\n",
+	       program_name);
+      fputs ("\n\
+Interact with fingerprint scanner devices.\n\
+If no option was given, list available devices.\n\
+\n\
+", stdout);
+      fputs("\
+Mandatory arguments to long options are mandatory for short options too.\n\
+", stdout);
+      fputs ("\
+  -v, --verbose   be verbose\n\
+      --help      display this help and exit\n\
+      --version   output version information and exit\n\
+", stdout);
+      printf("\nReport bugs to uli at waeup dot org.\n");
+    }
+}
+
+
 struct fp_dscv_dev *discover_device(struct fp_dscv_dev **discovered_devs)
 {
 	struct fp_dscv_dev *ddev = discovered_devs[0];
@@ -46,54 +116,32 @@ struct fp_dscv_dev *discover_device(struct fp_dscv_dev **discovered_devs)
 	return ddev;
 }
 
-void print_help(void)
-{
-  fprintf(stderr, "Usage: fpscan [OPTION]...\n");
-  fprintf(stderr, "Interact with fingerprint scanner devices.\n");
-  fprintf(stderr, "If no option was given, list available devices.\n");
-  fprintf(stderr, "\n");
-  fprintf(stderr, "  -v, --verbose   be verbose\n");
-  fprintf(stderr, "  -h, --help      display this help and quit\n");
-  fprintf(stderr, "\n");
-  fprintf(stderr, "Mandatory arguments to long options are mandatory for short options too.\n");
-  fprintf(stderr, "\n");
-  fprintf(stderr, "Report fpscan bugs to uli at gnufix dot de.\n");
-}
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
   int verbose_flag = 0;
   int c;
+  program_name = argv[0];
 
-  while (1)
+  while ((c = getopt_long (argc, argv, "hv", long_options, NULL))
+	 != -1)
     {
-      static struct option long_options[] = {
-	{"help", no_argument, 0, 'h'},
-	{"verbose", no_argument, 0, 'v'},
-	{NULL, 0, NULL, 0}
-      };
-      int option_index = 0;
-      c = getopt_long(argc, argv, "hv", long_options, &option_index);
-      if (c == -1) {
-	break;
-      }
       switch(c)
 	{
-	case 0:
-	  /* no further options to scan/handle */
-	  break;
 	case 'v':
 	  printf( "Be verbose\n" );
 	  verbose_flag = 1;
 	  break;
-	case 'h':
-	  print_help();
-	  exit(0);
-	case '?':
-	  /* error happened; error message already printed. */
+	case GETOPT_HELP_CHAR:
+	  usage (EXIT_SUCCESS);
 	  break;
+	case GETOPT_VERSION_CHAR:
+	  version (stdout );
+	  exit (EXIT_SUCCESS);
 	default:
-	  abort ();
+	  usage (EXIT_FAILURE);
+	  break;
 	}
     }
   exit(0);
