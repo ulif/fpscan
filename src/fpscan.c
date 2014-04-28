@@ -152,7 +152,7 @@ detect_devices(int verbose_flag)
 {
   int dev_num = 0;
   struct fp_dscv_dev **discovered_devs;
-  struct fp_dscv_dev **curr_dev;
+  struct fp_dscv_dev *curr_dev;
 
   discovered_devs = fp_discover_devs ();
 
@@ -174,10 +174,9 @@ detect_devices(int verbose_flag)
     return;
   }
 
-  for (curr_dev = discovered_devs; *curr_dev != NULL; curr_dev++)
+  for (dev_num = 0; (curr_dev = discovered_devs[dev_num]); dev_num++)
     {
-      dev_num++;
-      discover_device(*curr_dev, verbose_flag);
+      discover_device(curr_dev, verbose_flag);
     }
 
   fp_dscv_devs_free(discovered_devs);
