@@ -57,15 +57,14 @@ version(FILE *stream)
 {
   fprintf (stream, "%s %s\n", PROGRAM_NAME, VERSION);
   fprintf (stream, "Copyright (C) 2014 Uli Fouquet and WAeUP Germany\n");
-  fputs ("\
+  fprintf (stream, "\
 \n\
 License GPLv3+: GNU GPL version 3 or later \
 <http://gnu.org/licenses/gpl.html>.\n\
 This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n\
 \n\
-",
-	 stream);
+");
   fprintf (stream, "Written by Uli Fouquet.\n");
 }
 
@@ -80,15 +79,15 @@ usage(int status)
       printf ("\
 Usage: %s [OPTION]...\n",
 	       program_name);
-      fputs ("\n\
+      (void) fputs ("\n\
 Interact with fingerprint scanner devices.\n\
 If no option was given, list available devices.\n\
 \n\
 ", stdout);
-      fputs ("\
+      (void) fputs ("\
 Mandatory arguments to long options are mandatory for short options too.\n\
 ", stdout);
-      fputs ("\
+      (void) fputs ("\
   -d, --device=NUM   device to use for scan/verify.\n\
   -s, --scan         do a scan. Creates a new fingerprint file.\n\
   -v, --verbose      be verbose\n\
@@ -117,7 +116,7 @@ discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
       fprintf(stderr, "Could not open device.\n");
       exit (EXIT_FAILURE);
     }
-  if (verbose_flag)
+  if (verbose_flag != 0)
     {
       printf ("Found %s\n", fp_driver_get_full_name (drv));
       printf ("  Driver name: %s\n", fp_driver_get_name (drv));
@@ -164,7 +163,7 @@ detect_devices(int verbose_flag)
     }
 
   if (*discovered_devs == NULL) {
-    if (verbose_flag)
+    if (verbose_flag != 0)
       {
 	fprintf (stdout, "No fingerprint scanners detected.\n");
       }
@@ -186,7 +185,7 @@ detect_devices(int verbose_flag)
 
 
 static void
-do_scan(const long int device_num, int verbose_flag)
+do_scan(const long int device_num,  /*@unused@*/ int verbose_flag)
 {
   printf("Do a scan for device %ld (not really yet.)\n", device_num);
 }
@@ -196,6 +195,7 @@ int
 main(int argc, char **argv)
 {
   char *_end_ptr;
+  int _option_index = 0;
   int verbose_flag = 0;
   int scan_flag = 0;
   long int device_num = 0;
@@ -204,7 +204,7 @@ main(int argc, char **argv)
 
   program_name = argv[0];
 
-  while ((c = getopt_long (argc, argv, "d:shv", long_options, NULL))
+  while ((c = getopt_long (argc, argv, "d:shv", long_options, &_option_index))
 	 != -1)
     {
       switch(c)
