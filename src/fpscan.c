@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <libfprint/fprint.h>
@@ -41,6 +42,8 @@ enum
 
 /* Options this program supports.  */
 static struct option const long_options[] = {
+  {"device", required_argument, NULL, 'd'},
+  {"scan", no_argument, NULL, 's'},
   {"verbose", no_argument, NULL, 'v'},
   {"help", no_argument, NULL, GETOPT_HELP_CHAR},
   {"version", no_argument, NULL, GETOPT_VERSION_CHAR},
@@ -85,9 +88,11 @@ If no option was given, list available devices.\n\
 Mandatory arguments to long options are mandatory for short options too.\n\
 ", stdout);
       fputs ("\
-  -v, --verbose   be verbose\n\
-      --help      display this help and exit\n\
-      --version   output version information and exit\n\
+  -d, --device=NUM   device to use for scan/verify.\n\
+  -s, --scan         do a scan. Creates a new fingerprint file.\n\
+  -v, --verbose      be verbose\n\
+      --help         display this help and exit\n\
+      --version      output version information and exit\n\
 ", stdout);
       printf("\nReport bugs to uli at waeup dot org.\n");
     }
@@ -179,20 +184,48 @@ detect_devices(int verbose_flag)
 }
 
 
+void
+do_scan(const int device_num, int verbose_flag)
+{
+  printf("Do a scan for device %d (not really yet.)\n", device_num);
+}
+
+
 int
 main(int argc, char **argv)
 {
+  char *_end_ptr;
   int verbose_flag = 0;
+  int scan_flag = 0;
+  long int device_num = 0;
   int c;
   int resource = 1;
 
   program_name = argv[0];
 
-  while ((c = getopt_long (argc, argv, "hv", long_options, NULL))
+  while ((c = getopt_long (argc, argv, "d:shv", long_options, NULL))
 	 != -1)
     {
       switch(c)
 	{
+	case 'd':
+	  device_num = strtol (optarg, &_end_ptr, 10);
+	  if (_end_ptr == optarg)
+	    {
+	      /* no leading digits in input */
+	      fprintf(stderr, "not a valid device number: %s\n", optarg);
+	      exit (EXIT_FAILURE);
+	    }
+	  if (errno != 0)
+	    {
+	      /* out of range or similar */
+	      perror ("invalid device number");
+	      exit (EXIT_FAILURE);
+	    }
+	  break;
+	case 's':
+	  scan_flag = 1;
+	  break;
 	case 'v':
 	  verbose_flag = 1;
 	  break;
@@ -213,7 +246,14 @@ main(int argc, char **argv)
     exit (EXIT_FAILURE);
   }
 
-  detect_devices (verbose_flag);
+  if (scan_flag)
+    {
+      do_scan(device_num, verbose_flag);
+    }
+  else
+    {
+      detect_devices (verbose_flag);
+    }
 
   fp_exit();
   exit (EXIT_SUCCESS);
