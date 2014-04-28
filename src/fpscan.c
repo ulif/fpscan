@@ -84,7 +84,7 @@ Interact with fingerprint scanner devices.\n\
 If no option was given, list available devices.\n\
 \n\
 ", stdout);
-      fputs("\
+      fputs ("\
 Mandatory arguments to long options are mandatory for short options too.\n\
 ", stdout);
       fputs ("\
@@ -94,7 +94,7 @@ Mandatory arguments to long options are mandatory for short options too.\n\
       --help         display this help and exit\n\
       --version      output version information and exit\n\
 ", stdout);
-      printf("\nReport bugs to uli at waeup dot org.\n");
+      printf ("\nReport bugs to uli at waeup dot org.\n");
     }
 }
 
@@ -165,11 +165,11 @@ detect_devices(int verbose_flag)
   if (*discovered_devs == NULL) {
     if (verbose_flag)
       {
-	fprintf(stdout, "No fingerprint scanners detected.\n");
+	fprintf (stdout, "No fingerprint scanners detected.\n");
       }
     else
       {
-	fprintf(stdout, "0\n");
+	fprintf (stdout, "0\n");
       }
     return;
   }
@@ -213,7 +213,7 @@ main(int argc, char **argv)
 	  if (_end_ptr == optarg)
 	    {
 	      /* no leading digits in input */
-	      fprintf(stderr, "not a valid device number: %s\n", optarg);
+	      fprintf (stderr, "not a valid device number: %s\n", optarg);
 	      exit (EXIT_FAILURE);
 	    }
 	  if (errno != 0)
@@ -240,7 +240,7 @@ main(int argc, char **argv)
 	  exit (EXIT_FAILURE);
 	}
     }
-  resource = fp_init();
+  resource = fp_init ();
   if (resource < 0) {
     fprintf (stderr, "Failed to initialize libfprint\n");
     exit (EXIT_FAILURE);
@@ -255,6 +255,6 @@ main(int argc, char **argv)
       detect_devices (verbose_flag);
     }
 
-  fp_exit();
+  fp_exit ();
   exit (EXIT_SUCCESS);
 }
