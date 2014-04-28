@@ -29,7 +29,8 @@
 #define PROGRAM_NAME "fpscan"
 #define VERSION "0.1dev"
 
-char *program_name = NULL;
+/*@null@*/
+static char *program_name = NULL;
 
 /* These enum values cannot possibly conflict with the option values
    ordinarily used by commands, including CHAR_MAX + 1, etc.  Avoid
@@ -42,16 +43,16 @@ enum
 
 /* Options this program supports.  */
 static struct option const long_options[] = {
-  {"device", required_argument, NULL, 'd'},
-  {"scan", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"device", required_argument, NULL, (int)'d'},
+  {"scan", no_argument, NULL, (int)'s'},
+  {"verbose", no_argument, NULL, (int)'v'},
   {"help", no_argument, NULL, GETOPT_HELP_CHAR},
   {"version", no_argument, NULL, GETOPT_VERSION_CHAR},
   {NULL, 0, NULL, 0}
 };
 
 
-void
+static void
 version(FILE *stream)
 {
   fprintf (stream, "%s %s\n", PROGRAM_NAME, VERSION);
@@ -69,7 +70,7 @@ There is NO WARRANTY, to the extent permitted by law.\n\
 }
 
 
-void
+static void
 usage(int status)
 {
   if (status != EXIT_SUCCESS)
@@ -99,8 +100,8 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 }
 
 
-void
-discover_device(struct fp_dscv_dev *ddev, int verbose_flag)
+static void
+discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
 {
   struct fp_driver *drv = NULL;
   struct fp_dev *dev = NULL;
@@ -147,7 +148,7 @@ discover_device(struct fp_dscv_dev *ddev, int verbose_flag)
 }
 
 
-void
+static void
 detect_devices(int verbose_flag)
 {
   int dev_num = 0;
@@ -184,10 +185,10 @@ detect_devices(int verbose_flag)
 }
 
 
-void
-do_scan(const int device_num, int verbose_flag)
+static void
+do_scan(const long int device_num, int verbose_flag)
 {
-  printf("Do a scan for device %d (not really yet.)\n", device_num);
+  printf("Do a scan for device %ld (not really yet.)\n", device_num);
 }
 
 
@@ -246,7 +247,7 @@ main(int argc, char **argv)
     exit (EXIT_FAILURE);
   }
 
-  if (scan_flag)
+  if (scan_flag != 0)
     {
       do_scan(device_num, verbose_flag);
     }
