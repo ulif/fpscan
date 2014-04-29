@@ -230,13 +230,19 @@ detect_devices(int verbose_flag)
 }
 
 
-static void
+static int
 do_scan(const long int device_num,  /*@unused@*/ int verbose_flag)
 {
   struct fp_dscv_dev *dev;
 
   dev = get_device_by_id(device_num);
+  if (dev == NULL)
+    {
+      fprintf(stderr, "Invalid device number: %ld.\n", device_num);
+      return EXIT_FAILURE;
+    }
   printf("Do a scan for device %ld (not really yet.)\n", device_num);
+  return EXIT_SUCCESS;
 }
 
 
@@ -250,6 +256,7 @@ main(int argc, char **argv)
   long int device_num = 0;
   int c;
   int resource = 1;
+  int cmd_result = EXIT_SUCCESS;
 
   program_name = argv[0];
 
@@ -303,7 +310,7 @@ main(int argc, char **argv)
 
   if (scan_flag != 0)
     {
-      do_scan(device_num, verbose_flag);
+      cmd_result = do_scan(device_num, verbose_flag);
     }
   else
     {
@@ -312,5 +319,5 @@ main(int argc, char **argv)
 
   fp_dscv_devs_free (discovered_devs);
   fp_exit ();
-  exit (EXIT_SUCCESS);
+  exit (cmd_result);
 }
