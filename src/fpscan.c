@@ -120,10 +120,10 @@ discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
     {
       printf ("Found %s\n", fp_driver_get_full_name (drv));
       printf ("  Driver name: %s\n", fp_driver_get_name (drv));
-      printf ("  Driver ID:   %d\n", fp_driver_get_driver_id (drv));
+      printf ("  Driver ID:   %d\n", (int) fp_driver_get_driver_id (drv));
       printf ("  Scan type:   %d\n", fp_driver_get_scan_type (drv));
       printf ("  Num Enroll Stages:  %d\n", fp_dev_get_nr_enroll_stages (dev));
-      printf ("  Devtype:            %d\n", fp_dev_get_devtype (dev));
+      printf ("  Devtype:            %d\n", (int) fp_dev_get_devtype (dev));
       printf ("  Supports Imaging:   %d\n", fp_dev_supports_imaging (dev));
       printf ("  Image WidthxHeight: %d x %d\n",
 	     fp_dev_get_img_width (dev), fp_dev_get_img_height (dev));
@@ -134,10 +134,10 @@ discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
 %s\n\
   %d %d %d %d %d %d %d\n\
 ",	      fp_driver_get_full_name (drv),
-	      fp_driver_get_driver_id (drv),
+	      (int) fp_driver_get_driver_id (drv),
 	      fp_driver_get_scan_type (drv),
 	      fp_dev_get_nr_enroll_stages (dev),
-	      fp_dev_get_devtype (dev),
+	      (int) fp_dev_get_devtype (dev),
 	      fp_dev_supports_imaging (dev),
 	      fp_dev_get_img_width (dev),
 	      fp_dev_get_img_height (dev)
@@ -176,10 +176,12 @@ detect_devices(int verbose_flag)
 
   for (dev_num = 0; (curr_dev = discovered_devs[dev_num]); dev_num++)
     {
-      discover_device(curr_dev, verbose_flag);
+      discover_device (curr_dev, verbose_flag);
     }
 
-  fp_dscv_devs_free(discovered_devs);
+  fp_dscv_devs_free (discovered_devs);
+  curr_dev = NULL;
+  discovered_devs = NULL;
 }
 
 
