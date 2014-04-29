@@ -51,6 +51,7 @@ static struct option const long_options[] = {
   {NULL, 0, NULL, 0}
 };
 
+static long int official_dev_num = 0;
 
 static void
 version(FILE *stream)
@@ -98,6 +99,17 @@ Mandatory arguments to long options are mandatory for short options too.\n\
     }
 }
 
+/**
+ * Get a unique id for a device.
+ *
+ * XXX: Create a real id by examining USB data/internal driver data.
+ */
+static long
+get_device_id(struct fp_dscv_dev *dev)
+{
+  return (long) official_dev_num++;  /* This is nonsense... */
+}
+
 
 static void
 discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
@@ -122,6 +134,7 @@ discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
       printf ("  Driver name: %s\n", fp_driver_get_name (drv));
       printf ("  Driver ID:   %d\n", (int) fp_driver_get_driver_id (drv));
       printf ("  Scan type:   %d\n", fp_driver_get_scan_type (drv));
+      printf ("  Device ID:   %d\n", (int) get_device_id (ddev));
       printf ("  Num Enroll Stages:  %d\n", fp_dev_get_nr_enroll_stages (dev));
       printf ("  Devtype:            %d\n", (int) fp_dev_get_devtype (dev));
       printf ("  Supports Imaging:   %d\n", fp_dev_supports_imaging (dev));
@@ -174,10 +187,12 @@ detect_devices(int verbose_flag)
     return;
   }
 
+  official_dev_num = 0;  /* reset dev num counter */
   for (dev_num = 0; (curr_dev = discovered_devs[dev_num]); dev_num++)
     {
       discover_device (curr_dev, verbose_flag);
     }
+  official_dev_num = 0;  /* reset dev num counter */
 
   fp_dscv_devs_free (discovered_devs);
   curr_dev = NULL;
