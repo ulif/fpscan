@@ -138,12 +138,11 @@ get_device_id(struct fp_dscv_dev *dev)
 static struct fp_dscv_dev
 *get_device_by_id(long int dev_id)
 {
-  int curr_num;
-  struct fp_dscv_dev *curr_dev;
-  for (curr_num = 0;
-       (curr_dev = discovered_devs[curr_num]) && (curr_num < dev_id);
-       curr_num++);
-  return curr_dev;
+  if ((dev_id > max_dscv_dev) || (dev_id < 0))
+    {
+      return NULL;
+    }
+  return discovered_devs[dev_id];
 }
 
 
