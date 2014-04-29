@@ -106,6 +106,17 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 }
 
 /**
+ * Set the maximum index number for devices found.
+ */
+void
+set_max_dscv_dev(void)
+{
+  for (max_dscv_dev = -1;
+       (discovered_devs[max_dscv_dev + 1]);
+       max_dscv_dev++);
+}
+
+/**
  * Get a unique id for a device.
  *
  * XXX: Create a real id by examining USB data/internal driver data.
@@ -289,9 +300,7 @@ main(int argc, char **argv)
   discovered_devs = fp_discover_devs ();
 
   /* Set the maximum index number for devices found... */
-  for (max_dscv_dev = -1;
-       (discovered_devs[max_dscv_dev + 1]);
-       max_dscv_dev++);
+  set_max_dscv_dev();
 
   if (scan_flag != 0)
     {
