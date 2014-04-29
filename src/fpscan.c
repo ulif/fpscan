@@ -133,7 +133,8 @@ discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
       printf ("Found %s\n", fp_driver_get_full_name (drv));
       printf ("  Driver name: %s\n", fp_driver_get_name (drv));
       printf ("  Driver ID:   %d\n", (int) fp_driver_get_driver_id (drv));
-      printf ("  Scan type:   %d\n", fp_driver_get_scan_type (drv));
+      printf ("  Scan type:   %d (0=press, 1=swipe)\n",
+	      fp_driver_get_scan_type (drv));
       printf ("  Device ID:   %d\n", (int) get_device_id (ddev));
       printf ("  Num Enroll Stages:  %d\n", fp_dev_get_nr_enroll_stages (dev));
       printf ("  Devtype:            %d\n", (int) fp_dev_get_devtype (dev));
