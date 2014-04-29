@@ -53,6 +53,12 @@ static struct option const long_options[] = {
 
 static long int official_dev_num = 0;
 
+/* The devices found locally. */
+static struct fp_dscv_dev **discovered_devs = NULL;
+
+/* The maximum index number for devices found. */
+static long max_dscv_dev = -1;
+
 static void
 version(FILE *stream)
 {
@@ -110,6 +116,25 @@ get_device_id(struct fp_dscv_dev *dev)
   return (long) official_dev_num++;  /* This is nonsense... */
 }
 
+/**
+ * Get a device by device id.
+ *
+ * This function is neither smart, nor secure, as long as we do not have
+ * any (really) reliable device ids.
+ *
+ * Return a non-NULL pointer if the requested device exists.
+ */
+static struct fp_dscv_dev
+*get_device_by_id(long int dev_id)
+{
+  int curr_num;
+  struct fp_dscv_dev *curr_dev;
+  for (curr_num = 0;
+       (curr_dev = discovered_devs[curr_num]) && (curr_num < dev_id);
+       curr_num++);
+  return curr_dev;
+}
+
 
 static void
 discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
@@ -165,10 +190,7 @@ static void
 detect_devices(int verbose_flag)
 {
   int dev_num = 0;
-  struct fp_dscv_dev **discovered_devs;
   struct fp_dscv_dev *curr_dev;
-
-  discovered_devs = fp_discover_devs ();
 
   if (!discovered_devs)
     {
@@ -194,16 +216,16 @@ detect_devices(int verbose_flag)
       discover_device (curr_dev, verbose_flag);
     }
   official_dev_num = 0;  /* reset dev num counter */
-
-  fp_dscv_devs_free (discovered_devs);
   curr_dev = NULL;
-  discovered_devs = NULL;
 }
 
 
 static void
 do_scan(const long int device_num,  /*@unused@*/ int verbose_flag)
 {
+  struct fp_dscv_dev *dev;
+
+  dev = get_device_by_id(device_num);
   printf("Do a scan for device %ld (not really yet.)\n", device_num);
 }
 
@@ -264,6 +286,13 @@ main(int argc, char **argv)
     exit (EXIT_FAILURE);
   }
 
+  discovered_devs = fp_discover_devs ();
+
+  /* Set the maximum index number for devices found... */
+  for (max_dscv_dev = -1;
+       (discovered_devs[max_dscv_dev + 1]);
+       max_dscv_dev++);
+
   if (scan_flag != 0)
     {
       do_scan(device_num, verbose_flag);
@@ -273,6 +302,7 @@ main(int argc, char **argv)
       detect_devices (verbose_flag);
     }
 
+  fp_dscv_devs_free (discovered_devs);
   fp_exit ();
   exit (EXIT_SUCCESS);
 }
