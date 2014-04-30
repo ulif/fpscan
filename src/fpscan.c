@@ -234,14 +234,35 @@ static int
 do_scan(const long int device_num,  /*@unused@*/ int verbose_flag)
 {
   struct fp_dscv_dev *dev;
+  struct fp_dev *handle;
+  struct fp_print_data *data;
+  enum fp_enroll_result scan_result;
 
-  dev = get_device_by_id(device_num);
+  dev = get_device_by_id (device_num);
   if (dev == NULL)
     {
-      fprintf(stderr, "Invalid device number: %ld.\n", device_num);
+      fprintf (stderr, "Invalid device number: %ld.\n", device_num);
       return EXIT_FAILURE;
     }
-  printf("Do a scan for device %ld (not really yet.)\n", device_num);
+  handle = fp_dev_open (dev);
+  if (handle == NULL)
+    {
+      fprintf (stderr, "Could not open device.\n");
+      return EXIT_FAILURE;
+    }
+
+  if (verbose_flag != 0)
+    {
+      printf("Scanning data, please touch the device\n");
+    }
+  scan_result = fp_enroll_finger (handle, &data);
+  if (verbose_flag != 0)
+    {
+      printf ("Did scan via device %ld (result: %d, %p).\n",
+	      device_num, scan_result, data);
+    }
+  fp_dev_close (handle);
+
   return EXIT_SUCCESS;
 }
 
