@@ -230,8 +230,35 @@ detect_devices(int verbose_flag)
 }
 
 
+/**
+ * Save binary fingerprint data to file.
+ */
 static int
-do_scan(const long int device_num,  /*@unused@*/ int verbose_flag)
+save_print_data(struct fp_print_data *data, char *filename, int verbose_flag)
+{
+  FILE *fp;
+  size_t len;
+  unsigned char *buf;
+
+  len = fp_print_data_get_data (data, &buf);
+  if (verbose_flag)
+    {
+      printf ("Saving print data to %s\n", filename);
+    }
+  fp = fopen (filename, "w+");
+  if (fp == NULL)
+    {
+      fprintf (stderr, "Could not open file `%s'\n");
+      return EXIT_FAILURE;
+    }
+  fwrite (buf, len, 1, fp);
+  fclose (fp);
+  return EXIT_SUCCESS;
+}
+
+
+static int
+do_scan(const long int device_num, int verbose_flag)
 {
   struct fp_dscv_dev *dev;
   struct fp_dev *handle;
@@ -260,6 +287,14 @@ do_scan(const long int device_num,  /*@unused@*/ int verbose_flag)
     {
       printf ("Did scan via device %ld (result: %d, %p).\n",
 	      device_num, scan_result, data);
+    }
+  if (scan_result == FP_ENROLL_COMPLETE)
+    {
+      if (verbose_flag != 0)
+	{
+	  printf ("Fingerprint scan complete.\n");
+	}
+      save_print_data(data, "data.fp", verbose_flag);
     }
   fp_dev_close (handle);
 
