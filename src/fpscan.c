@@ -60,8 +60,8 @@ static struct fp_dscv_dev **discovered_devs = NULL;
 /* The maximum index number for devices found. */
 static long max_dscv_dev = -1;
 
-/* A filename when outputting data */
-static char *filename = "data.fp";
+/* A filename for output data. 'fpm' stands for 'finger print minutiae' */
+static char *filename = "data.fpm";
 
 static void
 version(FILE *stream)
@@ -101,8 +101,9 @@ Mandatory arguments to long options are mandatory for short options too.\n\
       (void) fputs ("\
   -d, --device=NUM   device to use for scan/verify.\n\
   -o, --outfile=FILE   path to a file used for storing prints.\n\
+                     The used file-format is libfprint-specific.\n\
   -s, --scan         do a scan. Creates a new fingerprint file\n\
-                     named `data.fp'. Use `-o' for a different\n\
+                     named `data.fpm'. Use `-o' for a different\n\
                      filename.\n\
   -v, --verbose      be verbose\n\
       --help         display this help and exit\n\
