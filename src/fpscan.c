@@ -44,6 +44,7 @@ enum
 /* Options this program supports.  */
 static struct option const long_options[] = {
   {"device", required_argument, NULL, (int)'d'},
+  {"outfile", required_argument, NULL, (int)'o'},
   {"scan", no_argument, NULL, (int)'s'},
   {"verbose", no_argument, NULL, (int)'v'},
   {"help", no_argument, NULL, GETOPT_HELP_CHAR},
@@ -58,6 +59,9 @@ static struct fp_dscv_dev **discovered_devs = NULL;
 
 /* The maximum index number for devices found. */
 static long max_dscv_dev = -1;
+
+/* A filename when outputting data */
+static char *filename = "data.fp";
 
 static void
 version(FILE *stream)
@@ -96,7 +100,10 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 ", stdout);
       (void) fputs ("\
   -d, --device=NUM   device to use for scan/verify.\n\
-  -s, --scan         do a scan. Creates a new fingerprint file.\n\
+  -o, --outfile=FILE   path to a file used for storing prints.\n\
+  -s, --scan         do a scan. Creates a new fingerprint file\n\
+                     named `data.fp'. Use `-o' for a different\n\
+                     filename.\n\
   -v, --verbose      be verbose\n\
       --help         display this help and exit\n\
       --version      output version information and exit\n\
@@ -294,7 +301,7 @@ do_scan(const long int device_num, int verbose_flag)
 	{
 	  printf ("Fingerprint scan complete.\n");
 	}
-      save_print_data(data, "data.fp", verbose_flag);
+      save_print_data(data, filename, verbose_flag);
     }
   fp_dev_close (handle);
 
@@ -316,7 +323,7 @@ main(int argc, char **argv)
 
   program_name = argv[0];
 
-  while ((c = getopt_long (argc, argv, "d:shv", long_options, &_option_index))
+  while ((c = getopt_long (argc, argv, "d:o:shv", long_options, &_option_index))
 	 != -1)
     {
       switch(c)
@@ -336,6 +343,9 @@ main(int argc, char **argv)
 	      exit (EXIT_FAILURE);
 	    }
 	  break;
+	case 'o':
+	  filename = optarg;
+          break;
 	case 's':
 	  scan_flag = 1;
 	  break;
