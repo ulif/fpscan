@@ -272,6 +272,7 @@ do_scan(const long int device_num, int verbose_flag)
   struct fp_dev *handle;
   struct fp_print_data *data;
   enum fp_enroll_result scan_result;
+  int result = EXIT_SUCCESS;
 
   dev = get_device_by_id (device_num);
   if (dev == NULL)
@@ -303,10 +304,11 @@ do_scan(const long int device_num, int verbose_flag)
 	  printf ("Fingerprint scan complete.\n");
 	}
       save_print_data(data, filename, verbose_flag);
+      result = EXIT_FAILURE;
     }
   fp_dev_close (handle);
 
-  return EXIT_SUCCESS;
+  return result;
 }
 
 
