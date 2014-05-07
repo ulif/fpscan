@@ -291,23 +291,68 @@ do_scan(const long int device_num, int verbose_flag)
     {
       printf("Scanning data, please touch the device\n");
     }
-  scan_result = fp_enroll_finger (handle, &data);
-  if (verbose_flag != 0)
+
+  while ((scan_result = fp_enroll_finger (handle, &data)) > 2)
     {
-      printf ("Did scan via device %ld (result: %d, %p).\n",
-	      device_num, scan_result, data);
-    }
+
+      switch (scan_result)
+	{
+	case FP_ENROLL_PASS:
+	  if (verbose_flag != 0)
+	    {
+	      printf ("Scan done. Another scan needed. ");
+	      printf ("Please touch the device.\n");
+	    }
+	  else
+	    {
+	      printf ("pass\n");
+	    }
+	  result = EXIT_SUCCESS;
+	  break;
+	case FP_ENROLL_RETRY:
+	case FP_ENROLL_RETRY_TOO_SHORT:
+	case FP_ENROLL_RETRY_CENTER_FINGER:
+	default:
+	  if (verbose_flag != 0)
+	    {
+	      printf ("Scan failed, retrying. Please touch the device.\n");
+	    }
+	  else
+	    {
+	      printf ("retry\n");
+	    }
+
+	  result = EXIT_FAILURE;
+	}  /* switch */
+
+    }  /* while */
+
+  /* Scan actually succeeded or failed */
   if (scan_result == FP_ENROLL_COMPLETE)
     {
       if (verbose_flag != 0)
 	{
 	  printf ("Fingerprint scan complete.\n");
 	}
-      save_print_data(data, filename, verbose_flag);
-      result = EXIT_FAILURE;
+      else
+	{
+	  printf ("ok\n");
+	}
+      result = save_print_data(data, filename, verbose_flag);
     }
-  fp_dev_close (handle);
+  else
+    {
+      if (verbose_flag != 0)
+	{
+	  printf ("Fingerprint scan failed.\n");
+	}
+      else
+	{
+	  printf ("fail\n");
+	}
+    }
 
+  fp_dev_close (handle);
   return result;
 }
 
