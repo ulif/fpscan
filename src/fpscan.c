@@ -99,6 +99,8 @@ If no option was given, list available devices.\n\
 Mandatory arguments to long options are mandatory for short options too.\n\
 ", stdout);
       (void) fputs ("\
+  -c, --compare      compare fingerprints and decide whether\n\
+                     they match.\n\
   -d, --device=NUM   device to use for scan/verify.\n\
   -o, --outfile=FILE   path to a file used for storing prints.\n\
                      The used file-format is libfprint-specific.\n\
@@ -364,6 +366,7 @@ main(int argc, char **argv)
   int _option_index = 0;
   int verbose_flag = 0;
   int scan_flag = 0;
+  int cmp_flag = 0;
   long int device_num = 0;
   int c;
   int resource = 1;
@@ -371,11 +374,16 @@ main(int argc, char **argv)
 
   program_name = argv[0];
 
-  while ((c = getopt_long (argc, argv, "d:o:shv", long_options, &_option_index))
+  while ((c = getopt_long (argc, argv, "cd:o:shv", long_options,
+			   &_option_index))
 	 != -1)
     {
       switch(c)
 	{
+        case 'c':
+          cmp_flag = 1;
+	  fprintf (stderr, "verifying not yet implemented\n");
+	  exit (EXIT_FAILURE);
 	case 'd':
 	  device_num = strtol (optarg, &_end_ptr, 10);
 	  if (_end_ptr == optarg)
