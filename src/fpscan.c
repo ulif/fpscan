@@ -102,7 +102,10 @@ Mandatory arguments to long options are mandatory for short options too.\n\
 ", stdout);
       (void) fputs ("\
   -c, --compare      compare fingerprints and decide whether\n\
-                     they match.\n\
+                     they match. Needs a fingerprint file\n\
+                     for comparison. By default we look for a\n\
+                     file named `data.fpm'. Use `-i' for a\n\
+                     different filename.\n\
   -d, --device=NUM   device to use for scan/verify.\n\
   -i, --infile=FILE    path to a file with a previously stored\n\
                      fingerprint.\n\
