@@ -43,7 +43,9 @@ enum
 
 /* Options this program supports.  */
 static struct option const long_options[] = {
+  {"compare", no_argument, NULL, (int)'c'},
   {"device", required_argument, NULL, (int)'d'},
+  {"infile", required_argument, NULL, (int)'i'},
   {"outfile", required_argument, NULL, (int)'o'},
   {"scan", no_argument, NULL, (int)'s'},
   {"verbose", no_argument, NULL, (int)'v'},
@@ -102,6 +104,8 @@ Mandatory arguments to long options are mandatory for short options too.\n\
   -c, --compare      compare fingerprints and decide whether\n\
                      they match.\n\
   -d, --device=NUM   device to use for scan/verify.\n\
+  -i, --infile=FILE    path to a file with a previously stored\n\
+                     fingerprint.\n\
   -o, --outfile=FILE   path to a file used for storing prints.\n\
                      The used file-format is libfprint-specific.\n\
   -s, --scan         do a scan. Creates a new fingerprint file\n\
@@ -374,7 +378,7 @@ main(int argc, char **argv)
 
   program_name = argv[0];
 
-  while ((c = getopt_long (argc, argv, "cd:o:shv", long_options,
+  while ((c = getopt_long (argc, argv, "cd:i:o:shv", long_options,
 			   &_option_index))
 	 != -1)
     {
@@ -398,6 +402,9 @@ main(int argc, char **argv)
 	      perror ("invalid device number");
 	      exit (EXIT_FAILURE);
 	    }
+	  break;
+	case 'i':
+	  filename = optarg;
 	  break;
 	case 'o':
 	  filename = optarg;
