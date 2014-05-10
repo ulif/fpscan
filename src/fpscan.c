@@ -266,7 +266,7 @@ save_print_data(struct fp_print_data *data, char *filename, int verbose_flag)
   fp = fopen (filename, "w+");
   if (fp == NULL)
     {
-      fprintf (stderr, "Could not open file `%s'\n");
+      fprintf (stderr, "Could not open file `%s'\n", filename);
       return EXIT_FAILURE;
     }
   fwrite (buf, len, 1, fp);
