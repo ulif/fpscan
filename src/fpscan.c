@@ -369,10 +369,27 @@ do_scan(const long int device_num, int verbose_flag)
 static int
 verify_fp(const long int device_num, int verbose_flag)
 {
+  FILE *fp;
+
+  fp = fopen (filename, "r");
+  if (fp == NULL)
+    {
+      if (verbose_flag != 0)
+	{
+	  if (errno != 0)
+	    {
+	      fprintf (stderr, "Could not open file `%s': ", filename);
+	      perror ("");
+	    }
+
+	}
+      return EXIT_FAILURE;
+    }
   if (verbose_flag != 0)
     {
-      printf("Verifying of fingerprints yet not implemented.\n");
+      printf ("Verifying of fingerprints yet not implemented.\n");
     }
+  fclose (fp);
   return EXIT_FAILURE;
 }
 
@@ -401,8 +418,7 @@ main(int argc, char **argv)
 	{
         case 'c':
           cmp_flag = 1;
-	  fprintf (stderr, "verifying not yet implemented\n");
-	  exit (EXIT_FAILURE);
+	  break;
 	case 'd':
 	  device_num = strtol (optarg, &_end_ptr, 10);
 	  if (_end_ptr == optarg)
