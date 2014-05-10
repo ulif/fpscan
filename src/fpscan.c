@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -378,8 +379,8 @@ verify_fp(const long int device_num, int verbose_flag)
 	{
 	  if (errno != 0)
 	    {
-	      fprintf (stderr, "Could not open file `%s': ", filename);
-	      perror ("");
+	      fprintf(stderr, "Could not open file `%s': ", filename);
+	      fprintf(stderr, "%s\n", strerror(errno));
 	    }
 
 	}
