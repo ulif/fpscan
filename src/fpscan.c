@@ -366,6 +366,18 @@ do_scan(const long int device_num, int verbose_flag)
 }
 
 
+static int
+verify_fp(const long int device_num, int verbose_flag)
+{
+  if (verbose_flag != 0)
+    {
+      printf("Verifying of fingerprints yet not implemented.\n");
+    }
+  return EXIT_FAILURE;
+}
+
+
+
 int
 main(int argc, char **argv)
 {
@@ -443,6 +455,10 @@ main(int argc, char **argv)
   if (scan_flag != 0)
     {
       cmd_result = do_scan(device_num, verbose_flag);
+    }
+  else if (cmp_flag != 0)
+    {
+      cmd_result = verify_fp(device_num, verbose_flag);
     }
   else
     {
