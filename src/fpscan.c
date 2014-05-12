@@ -370,10 +370,12 @@ do_scan(const long int device_num, int verbose_flag)
 /**
  * Load fingerprint data from file.
  *
+ * Returns EXIT_FAILURE in case of any errors.
+ *
  * XXX: Care for all possible error conditions.
  */
 static int
-load_from_file(char *path, struct fp_print_data **data)
+load_from_file(char *path, struct fp_print_data **data, int verbose_flag)
 {
   const unsigned int BUFLEN=4096;
   struct fp_print_data *fdata;
@@ -382,6 +384,20 @@ load_from_file(char *path, struct fp_print_data **data)
   FILE *fp;
 
   fp = fopen (path, "r");
+  if (fp == NULL)
+    {
+      if (verbose_flag != 0)
+	{
+	  if (errno != 0)
+	    {
+	      fprintf(stderr, "Could not open file `%s': ", filename);
+	      fprintf(stderr, "%s\n", strerror(errno));
+	    }
+
+	}
+      return EXIT_FAILURE;
+    }
+
   contents = malloc (BUFLEN * sizeof(char));
 
   while ((tmp_length = fread (contents + length, sizeof(char), BUFLEN, fp)
@@ -396,7 +412,7 @@ load_from_file(char *path, struct fp_print_data **data)
   fdata = fp_print_data_from_data (contents, length);
   free (contents);
   *data = fdata;
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 
@@ -404,30 +420,14 @@ static int
 verify_fp(const long int device_num, int verbose_flag)
 {
   int result;
-  FILE *fp;
   struct fp_print_data *data_from_file;
 
-  fp = fopen (filename, "r");
-  if (fp == NULL)
-    {
-      if (verbose_flag != 0)
-	{
-	  if (errno != 0)
-	    {
-	      fprintf(stderr, "Could not open file `%s': ", filename);
-	      fprintf(stderr, "%s\n", strerror(errno));
-	    }
-
-	}
-      return EXIT_FAILURE;
-    }
-  result = load_from_file(filename, &data_from_file);
+  result = load_from_file(filename, &data_from_file, verbose_flag);
 
   if (verbose_flag != 0)
     {
       printf ("Verifying of fingerprints yet not implemented.\n");
     }
-  fclose (fp);
   return EXIT_FAILURE;
 }
 
