@@ -390,8 +390,8 @@ load_from_file(char *path, struct fp_print_data **data, int verbose_flag)
 	{
 	  if (errno != 0)
 	    {
-	      fprintf(stderr, "Could not open file `%s': ", filename);
-	      fprintf(stderr, "%s\n", strerror(errno));
+	      fprintf (stderr, "Could not open file `%s': ", filename);
+	      fprintf (stderr, "%s\n", strerror(errno));
 	    }
 
 	}
@@ -422,7 +422,7 @@ verify_fp(const long int device_num, int verbose_flag)
   int result;
   struct fp_print_data *data_from_file;
 
-  result = load_from_file(filename, &data_from_file, verbose_flag);
+  result = load_from_file (filename, &data_from_file, verbose_flag);
 
   if (verbose_flag != 0)
     {
