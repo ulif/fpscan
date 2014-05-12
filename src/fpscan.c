@@ -422,8 +422,12 @@ verify_fp(const long int device_num, int verbose_flag)
   int result;
   struct fp_print_data *data_from_file;
 
+  /* Try to load fingerprint data from file */
   result = load_from_file (filename, &data_from_file, verbose_flag);
-
+  if (result == EXIT_FAILURE)
+    {
+      return result;
+    }
   if (verbose_flag != 0)
     {
       printf ("Verifying of fingerprints yet not implemented.\n");
