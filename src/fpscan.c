@@ -367,10 +367,45 @@ do_scan(const long int device_num, int verbose_flag)
 }
 
 
+/**
+ * Load fingerprint data from file.
+ *
+ * XXX: Care for all possible error conditions.
+ */
+static int
+load_from_file(char *path, struct fp_print_data **data)
+{
+  const unsigned int BUFLEN=4096;
+  struct fp_print_data *fdata;
+  size_t length = 0, tmp_length = 0;
+  unsigned char *contents;
+  FILE *fp;
+
+  fp = fopen (path, "r");
+  contents = malloc (BUFLEN * sizeof(char));
+
+  while ((tmp_length = fread (contents + length, sizeof(char), BUFLEN, fp)
+	  ) == BUFLEN)
+    {
+      length += BUFLEN;
+      contents = realloc (contents, (length + BUFLEN) * sizeof(char));
+    }
+  fclose (fp);
+  length += tmp_length;
+
+  fdata = fp_print_data_from_data (contents, length);
+  free (contents);
+  *data = fdata;
+  return 0;
+}
+
+
 static int
 verify_fp(const long int device_num, int verbose_flag)
 {
+  int result;
   FILE *fp;
+  struct fp_print_data *data_from_file;
 
   fp = fopen (filename, "r");
   if (fp == NULL)
@@ -386,6 +421,8 @@ verify_fp(const long int device_num, int verbose_flag)
 	}
       return EXIT_FAILURE;
     }
+  result = load_from_file(filename, &data_from_file);
+
   if (verbose_flag != 0)
     {
       printf ("Verifying of fingerprints yet not implemented.\n");
