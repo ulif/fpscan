@@ -421,6 +421,9 @@ verify_fp(const long int device_num, int verbose_flag)
 {
   int result;
   struct fp_print_data *data_from_file;
+  enum fp_verify_result verify_result;
+  struct fp_dscv_dev *dev;
+  struct fp_dev *handle;
 
   /* Try to load fingerprint data from file */
   result = load_from_file (filename, &data_from_file, verbose_flag);
@@ -428,11 +431,61 @@ verify_fp(const long int device_num, int verbose_flag)
     {
       return result;
     }
+
+  dev = get_device_by_id (device_num);
+  if (dev == NULL)
+    {
+      fprintf (stderr, "Invalid device number: %ld.\n", device_num);
+      return EXIT_FAILURE;
+    }
+  handle = fp_dev_open (dev);
+  if (handle == NULL)
+    {
+      fprintf (stderr, "Could not open device.\n");
+      return EXIT_FAILURE;
+    }
+
   if (verbose_flag != 0)
     {
-      printf ("Verifying of fingerprints yet not implemented.\n");
+      printf("Scanning finger, please touch the device\n");
     }
-  return EXIT_FAILURE;
+  verify_result = fp_verify_finger (handle, data_from_file);
+
+  switch (verify_result)
+    {
+    case FP_VERIFY_NO_MATCH:
+      if (verbose_flag != 0)
+	{
+	  printf ("No match\n");
+	}
+      else
+	{
+	  printf ("no-match\n");
+	}
+      break;
+    case FP_VERIFY_MATCH:
+      if (verbose_flag != 0)
+	{
+	  printf ("Match\n");
+	}
+      else
+	{
+	  printf ("ok\n");
+	}
+      break;
+    default:
+      if (verbose_flag != 0)
+	{
+	  printf ("Error while scanning\n");
+	}
+      else
+	{
+	  printf ("error: unknown reason\n");
+	}
+      return EXIT_FAILURE;
+    }
+  fp_dev_close (handle);
+  return EXIT_SUCCESS;
 }
 
 
