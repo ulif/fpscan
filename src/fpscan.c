@@ -186,7 +186,7 @@ discover_device(struct fp_dscv_dev *ddev, const int verbose_flag)
   dev = fp_dev_open (ddev);
   if (!dev)
     {
-      fprintf(stderr, "Could not open device.\n");
+      fprintf (stderr, "Could not open device.\n");
       exit (EXIT_FAILURE);
     }
   if (verbose_flag != 0)
@@ -307,7 +307,7 @@ do_scan(const long int device_num, int verbose_flag)
 
   if (verbose_flag != 0)
     {
-      printf("Scanning data, please touch the device\n");
+      printf ("Scanning data, please touch the device\n");
     }
 
   while ((scan_result = fp_enroll_finger (handle, &data)) > 2)
@@ -356,7 +356,7 @@ do_scan(const long int device_num, int verbose_flag)
 	{
 	  printf ("ok\n");
 	}
-      result = save_print_data(data, filename, verbose_flag);
+      result = save_print_data (data, filename, verbose_flag);
     }
   else
     {
@@ -399,20 +399,20 @@ load_from_file(char *path, struct fp_print_data **data, int verbose_flag)
 	  if (errno != 0)
 	    {
 	      fprintf (stderr, "Could not open file `%s': ", filename);
-	      fprintf (stderr, "%s\n", strerror(errno));
+	      fprintf (stderr, "%s\n", strerror (errno));
 	    }
 
 	}
       return EXIT_FAILURE;
     }
 
-  contents = malloc (BUFLEN * sizeof(char));
+  contents = malloc (BUFLEN * sizeof (char));
 
-  while ((tmp_length = fread (contents + length, sizeof(char), BUFLEN, fp)
+  while ((tmp_length = fread (contents + length, sizeof (char), BUFLEN, fp)
 	  ) == BUFLEN)
     {
       length += BUFLEN;
-      contents = realloc (contents, (length + BUFLEN) * sizeof(char));
+      contents = realloc (contents, (length + BUFLEN) * sizeof (char));
     }
   fclose (fp);
   length += tmp_length;
@@ -455,7 +455,7 @@ verify_fp(const long int device_num, int verbose_flag)
 
   if (verbose_flag != 0)
     {
-      printf("Scanning finger, please touch the device\n");
+      printf ("Scanning finger, please touch the device\n");
     }
   verify_result = fp_verify_finger (handle, data_from_file);
 
@@ -584,15 +584,15 @@ main(int argc, char **argv)
   discovered_devs = fp_discover_devs ();
 
   /* Set the maximum index number for devices found... */
-  set_max_dscv_dev();
+  set_max_dscv_dev ();
 
   if (scan_flag != 0)
     {
-      cmd_result = do_scan(device_num, verbose_flag);
+      cmd_result = do_scan (device_num, verbose_flag);
     }
   else if (cmp_flag != 0)
     {
-      cmd_result = verify_fp(device_num, verbose_flag);
+      cmd_result = verify_fp (device_num, verbose_flag);
     }
   else
     {
