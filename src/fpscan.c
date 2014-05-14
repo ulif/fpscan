@@ -91,8 +91,15 @@ usage(int status)
   else
     {
       printf ("\
-Usage: %s [OPTION]...\n",
-	       program_name);
+Usage: %s [OPTION]...                   (1st form, discovery mode)\n\
+ or:   %s [OPTION]... -s [-o FILE]      (2nd form, scan mode)\n\
+ or:   %s [OPTION]... -c [-i FILE]      (3rd form, comparison mode)\n\
+\n\
+In 1st form list available fingerprint scanners\n\
+In 2nd form scan a finger and create a new fingerprint file\n\
+In 3rd form scan a finger and compare it with fingerprint file\n\
+",
+	      program_name, program_name, program_name);
       (void) fputs ("\n\
 Interact with fingerprint scanner devices.\n\
 If no option was given, list available devices.\n\
@@ -106,7 +113,8 @@ Mandatory arguments to long options are mandatory for short options too.\n\
                      they match. Needs a fingerprint file\n\
                      for comparison. By default we look for a\n\
                      file named `data.fpm'. Use `-i' for a\n\
-                     different filename.\n\
+                     different filename. This option is mutual\n\
+                     exclusive with `s'.\n\
   -d, --device=NUM   device to use for scan/verify.\n\
   -i, --infile=FILE    path to a file with a previously stored\n\
                      fingerprint.\n\
@@ -114,7 +122,7 @@ Mandatory arguments to long options are mandatory for short options too.\n\
                      The used file-format is libfprint-specific.\n\
   -s, --scan         do a scan. Creates a new fingerprint file\n\
                      named `data.fpm'. Use `-o' for a different\n\
-                     filename.\n\
+                     filename. Mutual exclusive with `-c'.\n\
   -v, --verbose      be verbose\n\
       --help         display this help and exit\n\
       --version      output version information and exit\n\
@@ -511,9 +519,6 @@ main(int argc, char **argv)
     {
       switch(c)
 	{
-        case 'c':
-          cmp_flag = 1;
-	  break;
 	case 'd':
 	  device_num = strtol (optarg, &_end_ptr, 10);
 	  if (_end_ptr == optarg)
@@ -535,9 +540,6 @@ main(int argc, char **argv)
 	case 'o':
 	  filename = optarg;
           break;
-	case 's':
-	  scan_flag = 1;
-	  break;
 	case 'v':
 	  verbose_flag = 1;
 	  break;
@@ -547,10 +549,31 @@ main(int argc, char **argv)
 	case GETOPT_VERSION_CHAR:
 	  version (stdout );
 	  exit (EXIT_SUCCESS);
+        case 'c':
+          cmp_flag = 1;
+	  if (scan_flag == 0)
+	    {
+	      break;
+	    }
+	case 's':
+	  scan_flag = 1;
+	  if (cmp_flag == 0)
+	    {
+	      break;
+	    }
+	  fprintf (stderr, "Usage of `-s' and `-c' is mutual exclusive.\n");
 	default:
 	  usage (EXIT_FAILURE);
 	  exit (EXIT_FAILURE);
 	}
+    }
+  if ((scan_flag == 1) && (cmp_flag == 1))
+    {
+      if (verbose_flag == 1)
+	{
+	  fprintf (stderr, "Usage of `-c' and `-s' is mutual exclusive\n");
+	}
+      usage (EXIT_FAILURE);
     }
   resource = fp_init ();
   if (resource < 0) {
