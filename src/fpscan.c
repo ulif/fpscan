@@ -572,7 +572,7 @@ main(int argc, char **argv)
     {
       if (verbose_flag == 1)
 	{
-	  fprintf (stderr, "Usage of `-c' and `-s' is mutual exclusive\n");
+	  fprintf (stderr, "Usage of `-c' and `-s' is mutual exclusive.\n");
 	}
       usage (EXIT_FAILURE);
     }
