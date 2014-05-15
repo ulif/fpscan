@@ -416,6 +416,7 @@ load_from_file(char *path, struct fp_print_data **data, int verbose_flag)
     }
   if (!feof(fp))
     {
+      free (contents);
       return EXIT_FAILURE;
     }
   fclose (fp);
