@@ -439,9 +439,9 @@ verify_fp(const long int device_num, int verbose_flag)
 
   /* Try to load fingerprint data from file */
   result = load_from_file (filename, &data_from_file, verbose_flag);
-  if (result == EXIT_FAILURE)
+  if (result != EXIT_SUCCESS)
     {
-      return result;
+      return EXIT_FAILURE;
     }
 
   dev = get_device_by_id (device_num);
