@@ -313,7 +313,6 @@ do_scan(const long int device_num, int verbose_flag)
 
   while ((scan_result = fp_enroll_finger (handle, &data)) > 2)
     {
-
       switch (scan_result)
 	{
 	case FP_ENROLL_PASS:
@@ -414,6 +413,10 @@ load_from_file(char *path, struct fp_print_data **data, int verbose_flag)
     {
       length += BUFLEN;
       contents = realloc (contents, (length + BUFLEN) * sizeof (char));
+    }
+  if (!feof(fp))
+    {
+      return EXIT_FAILURE;
     }
   fclose (fp);
   length += tmp_length;
