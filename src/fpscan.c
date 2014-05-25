@@ -116,7 +116,8 @@ Mandatory arguments to long options are mandatory for short options too.\n\
                      file named `data.fpm'. Use `-i' for a\n\
                      different filename. This option is mutual\n\
                      exclusive with `s'.\n\
-  -d, --device=NUM   device to use for scan/verify.\n\
+  -d, --device=NUM     device to use for scan/verify. Equal to\n\
+                     device ID as output by default output.\n\
   -i, --infile=FILE    path to a file with a previously stored\n\
                      fingerprint.\n\
   -o, --outfile=FILE   path to a file used for storing prints.\n\
