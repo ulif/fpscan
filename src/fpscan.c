@@ -443,6 +443,7 @@ verify_fp(const long int device_num, int verbose_flag)
   result = load_from_file (filename, &data_from_file, verbose_flag);
   if (result != EXIT_SUCCESS)
     {
+      fprintf (stderr, "Could not load data from file: %s.\n", filename);
       return EXIT_FAILURE;
     }
 
