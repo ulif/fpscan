@@ -3,7 +3,7 @@ fpscan
 
 Fingerprint scanner commandline tool for Linux based on libfprint
 
-This project is yet in very early state and not usable.
+This project is yet in very early state, but at least partly usable.
 
 Building
 --------
