@@ -19,6 +19,7 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,8 @@
 /* The official name of this program.  */
 #define PROGRAM_NAME "fpscan"
 #define VERSION "0.1dev"
+
+volatile sig_atomic_t fatal_error_in_progress = 0;
 
 /*@null@*/
 static char *program_name = NULL;
@@ -66,6 +69,33 @@ static long max_dscv_dev = -1;
 
 /* A filename for output data. 'fpm' stands for 'finger print minutiae' */
 static char *filename = "data.fpm";
+
+void
+catch_error (int sig)
+{
+  /* Some error happened, clean up as good as we can */
+  fp_exit ();
+  fp_init ();
+  fp_exit ();
+  signal (sig, catch_error);
+  raise(sig);
+  return EXIT_FAILURE;
+}
+
+
+void
+fatal_error_signal (int sig)
+{
+  if (fatal_error_in_progress)
+    raise (sig);
+  fatal_error_in_progress = 1;
+
+  fp_exit();
+  fp_init();
+  fp_exit();
+
+  raise (sig);  /* reraising sets the return status correctly */
+}
 
 static void
 version(FILE *stream)
@@ -517,6 +547,12 @@ main(int argc, char **argv)
   int c;
   int resource = 1;
   int cmd_result = EXIT_SUCCESS;
+
+  /* Establish handler for signals */
+  signal (SIGINT, catch_error);
+  signal (SIGHUP, catch_error);
+  signal (SIGTERM, catch_error);
+  signal (SIGKILL, fatal_error_signal);
 
   program_name = argv[0];
 
