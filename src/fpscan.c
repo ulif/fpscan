@@ -79,7 +79,6 @@ catch_error (int sig)
   fp_exit ();
   signal (sig, catch_error);
   raise(sig);
-  return EXIT_FAILURE;
 }
 
 
