@@ -77,8 +77,7 @@ catch_error (int sig)
   fp_exit ();
   fp_init ();
   fp_exit ();
-  signal (sig, catch_error);
-  raise(sig);
+  exit (sig);
 }
 
 
