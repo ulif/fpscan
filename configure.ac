@@ -1,4 +1,4 @@
-AC_INIT([fpscan], [0.1dev], [uli@gnufix.de])
+AC_INIT([fpscan], [0.1], [uli@gnufix.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CC
 AC_CONFIG_HEADERS([config.h])

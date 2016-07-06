@@ -30,7 +30,7 @@
 
 /* The official name of this program.  */
 #define PROGRAM_NAME "fpscan"
-#define VERSION "0.1dev"
+#define VERSION "0.1"
 
 volatile sig_atomic_t fatal_error_in_progress = 0;
 
