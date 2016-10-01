@@ -52,6 +52,7 @@ static struct option const long_options[] = {
   {"device", required_argument, NULL, (int)'d'},
   {"infile", required_argument, NULL, (int)'i'},
   {"outfile", required_argument, NULL, (int)'o'},
+  {"image", no_argument, 0, 0},
   {"scan", no_argument, NULL, (int)'s'},
   {"verbose", no_argument, NULL, (int)'v'},
   {"help", no_argument, NULL, GETOPT_HELP_CHAR},
@@ -153,6 +154,7 @@ Mandatory arguments to long options are mandatory for short options too.\n\
   -s, --scan         do a scan. Creates a new fingerprint file\n\
                      named `data.fpm'. Use `-o' for a different\n\
                      filename. Mutual exclusive with `-c'.\n\
+      --image        make output file an image (.pnm format).\n\
   -v, --verbose      be verbose\n\
       --help         display this help and exit\n\
       --version      output version information and exit\n\
