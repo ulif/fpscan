@@ -541,6 +541,7 @@ main(int argc, char **argv)
   char *_end_ptr;
   int _option_index = 0;
   int verbose_flag = 0;
+  int image_flag = 0;        /* indicates we handle images, not data files */
   int scan_flag = 0;
   int cmp_flag = 0;
   long int device_num = 0;
@@ -586,6 +587,9 @@ main(int argc, char **argv)
 	case 'v':
 	  verbose_flag = 1;
 	  break;
+	case 'm':
+	  image_flag = 1;
+	  break;
 	case GETOPT_HELP_CHAR:
 	  usage (EXIT_SUCCESS);
 	  exit (EXIT_SUCCESS);
@@ -605,9 +609,6 @@ main(int argc, char **argv)
 	      break;
 	    }
 	  fprintf (stderr, "Usage of `-s' and `-c' is mutual exclusive.\n");
-	case 'm':
-	  fprintf( stderr, "Create image\n");
-	  exit (EXIT_SUCCESS);
 	default:
 	  usage (EXIT_FAILURE);
 	  exit (EXIT_FAILURE);
