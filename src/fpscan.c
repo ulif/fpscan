@@ -316,7 +316,7 @@ save_print_data(struct fp_print_data *data, char *filename, int verbose_flag)
 
 
 static int
-do_scan(const long int device_num, int verbose_flag)
+do_scan(const long int device_num, int verbose_flag, int image_flag)
 {
   struct fp_dscv_dev *dev;
   struct fp_dev *handle;
@@ -635,7 +635,7 @@ main(int argc, char **argv)
 
   if (scan_flag != 0)
     {
-      cmd_result = do_scan (device_num, verbose_flag);
+      cmd_result = do_scan (device_num, verbose_flag, image_flag);
     }
   else if (cmp_flag != 0)
     {
