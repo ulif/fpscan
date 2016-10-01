@@ -52,7 +52,7 @@ static struct option const long_options[] = {
   {"device", required_argument, NULL, (int)'d'},
   {"infile", required_argument, NULL, (int)'i'},
   {"outfile", required_argument, NULL, (int)'o'},
-  {"image", no_argument, 0, 0},
+  {"image", no_argument, NULL, (int)'m'},
   {"scan", no_argument, NULL, (int)'s'},
   {"verbose", no_argument, NULL, (int)'v'},
   {"help", no_argument, NULL, GETOPT_HELP_CHAR},
@@ -605,6 +605,9 @@ main(int argc, char **argv)
 	      break;
 	    }
 	  fprintf (stderr, "Usage of `-s' and `-c' is mutual exclusive.\n");
+	case 'm':
+	  fprintf( stderr, "Create image\n");
+	  exit (EXIT_SUCCESS);
 	default:
 	  usage (EXIT_FAILURE);
 	  exit (EXIT_FAILURE);
