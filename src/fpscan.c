@@ -380,12 +380,6 @@ do_scan(const long int device_num, int verbose_flag, int image_flag)
   /* Scan actually succeeded or failed */
   if (scan_result == FP_ENROLL_COMPLETE)
     {
-      if (img)
-	{
-	  fp_img_save_to_file (img, "data.pgm");
-	  printf("Wrote image to data.pgm\n");
-	  fp_img_free(img);
-	}
       if (verbose_flag != 0)
 	{
 	  printf ("Fingerprint scan complete.\n");
@@ -394,6 +388,21 @@ do_scan(const long int device_num, int verbose_flag, int image_flag)
 	{
 	  printf ("ok\n");
 	}
+      if (img)
+	{
+	  /* We received image data (not all devices support this) */
+	  if (image_flag != 0)
+	    {
+	      /* The image data were requested */
+	      fp_img_save_to_file (img, "data.pgm");
+	      if (verbose_flag != 0)
+		{
+		  printf ("Wrote image to data.pgm\n");
+		}
+	    }
+	  fp_img_free(img);
+	}
+
       result = save_print_data (data, filename, verbose_flag);
     }
   else
