@@ -154,7 +154,9 @@ Mandatory arguments to long options are mandatory for short options too.\n\
   -s, --scan         do a scan. Creates a new fingerprint file\n\
                      named `data.fpm'. Use `-o' for a different\n\
                      filename. Mutual exclusive with `-c'.\n\
-      --image        make output file an image (.pnm format).\n\
+      --image        When scanning, additionally create an image\n\
+                     file `data.pgm' (requires suitable scanning\n\
+                     device)\n\
   -v, --verbose      be verbose\n\
       --help         display this help and exit\n\
       --version      output version information and exit\n\
