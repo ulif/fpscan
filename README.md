@@ -46,6 +46,13 @@ Using
 a finger is scanned and the data stored to a new fingerprint file. By
 default this file is called `data.fpm` in the local directory.
 
+With
+
+    $ fpscan -s -v --image
+
+an additional image file in `.pgm` format is stored to file `data.pgm`
+in the local directory.
+
 Using
 
     $ fpscan -c -v
