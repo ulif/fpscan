@@ -60,3 +60,10 @@ Using
 a finger is scanned and compared to data in a file. The result is
 output on the commandline. By default the finger is compared to data
 in local file `data.fpm`.
+
+
+Use
+
+    $ fpscan --help
+
+to list all supported options.
