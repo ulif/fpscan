@@ -322,6 +322,7 @@ do_scan(const long int device_num, int verbose_flag, int image_flag)
   struct fp_dev *handle;
   struct fp_print_data *data;
   enum fp_enroll_result scan_result;
+  struct fp_img *img = NULL;
   int result = EXIT_SUCCESS;
 
   dev = get_device_by_id (device_num);
@@ -342,7 +343,7 @@ do_scan(const long int device_num, int verbose_flag, int image_flag)
       printf ("Scanning data, please touch the device\n");
     }
 
-  while ((scan_result = fp_enroll_finger (handle, &data)) > 2)
+  while ((scan_result = fp_enroll_finger_img (handle, &data, &img)) > 2)
     {
       switch (scan_result)
 	{
@@ -379,6 +380,12 @@ do_scan(const long int device_num, int verbose_flag, int image_flag)
   /* Scan actually succeeded or failed */
   if (scan_result == FP_ENROLL_COMPLETE)
     {
+      if (img)
+	{
+	  fp_img_save_to_file (img, "data.pgm");
+	  printf("Wrote image to data.pgm\n");
+	  fp_img_free(img);
+	}
       if (verbose_flag != 0)
 	{
 	  printf ("Fingerprint scan complete.\n");
